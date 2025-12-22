@@ -1,0 +1,56 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Python virtual environments
+venv/
+*/venv/
+tokenforge_chat_venv/
+
+# TokenForge module (tracked in its own repo; keep as external dependency)
+tokenforge/
+
+# TokenForge build artifacts (if you decide to vendor it later)
+tokenforge/dist/
+tokenforge/tokenforge.egg-info/
+
+# Wyze analyzer data and generated audio
+wyze_analyzer/transcriptions/
+wyze_analyzer/transcriptions_enhanced/
+wyze_analyzer/transcriptions_enhanced_hourly/
+wyze_analyzer/transcriptions_enhanced_october/
+wyze_analyzer/wyze_analyzer.log
+
+# Node / web build artifacts
+node_modules/
+dist/
+build/
+
+# OS / editor junk
+.DS_Store
+.vscode/
+.idea/
+
+# API Keys
+api_keys.json
+api_keys_localStorage.js
+.env
+*.key
+*.token
+
+# Node modules
+node_modules/
+package-lock.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db

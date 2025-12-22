@@ -1,0 +1,20 @@
+# Requirements for TokenForge Chat Application
+gradio>=4.0.0
+
+# TokenForge core (install from local directory)
+# Run: cd tokenforge && pip install -e .
+
+# Optional: For OpenAI integration
+openai>=1.0.0
+
+# Optional: For Anthropic integration
+anthropic>=0.18.0
+
+# Optional: For image encoding
+Pillow>=9.0.0
+numpy>=1.21.0
+
+# Core dependencies
+requests>=2.28.0
+
+

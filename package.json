@@ -1,0 +1,22 @@
+{
+  "name": "ava-api-automation",
+  "version": "1.0.0",
+  "description": "Automated API key setup for A.V.A. system",
+  "main": "automate_api_setup.js",
+  "scripts": {
+    "setup": "node automate_api_setup.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.0"
+  },
+  "keywords": [
+    "api",
+    "automation",
+    "ava",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

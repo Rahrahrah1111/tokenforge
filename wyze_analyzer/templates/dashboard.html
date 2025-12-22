@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wyze Camera Analyzer - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .filters {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filters select, .filters input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .filters button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .filters button:hover {
+            background: #5568d3;
+        }
+        
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .event-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .event-type {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .event-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .event-description {
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .event-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .event-transcription {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .event-actions button {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.2s;
+        }
+        
+        .event-actions button:hover {
+            background: #f0f0f0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-events {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 Wyze Camera Analyzer</h1>
+            <p>Event Detection & Speech Transcription Dashboard</p>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <h3 id="total-events">0</h3>
+                <p>Total Events</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="events-with-transcription">0</h3>
+                <p>With Transcription</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="total-duration">0h</h3>
+                <p>Total Duration</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="date-range">-</h3>
+                <p>Date Range</p>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <select id="event-type-filter">
+                <option value="">All Event Types</option>
+            </select>
+            <input type="date" id="start-date" placeholder="Start Date">
+            <input type="date" id="end-date" placeholder="End Date">
+            <button onclick="applyFilters()">Apply Filters</button>
+            <button onclick="resetFilters()">Reset</button>
+        </div>
+        
+        <div class="events-grid" id="events-grid">
+            <div class="loading">Loading events...</div>
+        </div>
+    </div>
+    
+    <script>
+        let allEvents = [];
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('total-events').textContent = stats.total_events;
+                document.getElementById('events-with-transcription').textContent = stats.events_with_transcription;
+                document.getElementById('total-duration').textContent = formatDuration(stats.total_duration);
+                
+                if (stats.date_range.start && stats.date_range.end) {
+                    const start = new Date(stats.date_range.start).toLocaleDateString();
+                    const end = new Date(stats.date_range.end).toLocaleDateString();
+                    document.getElementById('date-range').textContent = `${start} - ${end}`;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/events');
+                allEvents = await response.json();
+                displayEvents(allEvents);
+                populateEventTypeFilter();
+                loadStats();
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('events-grid').innerHTML = 
+                    '<div class="no-events">Error loading events. Please try again.</div>';
+            }
+        }
+        
+        function populateEventTypeFilter() {
+            const filter = document.getElementById('event-type-filter');
+            const types = [...new Set(allEvents.map(e => e.event_type))];
+            
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                filter.appendChild(option);
+            });
+        }
+        
+        function displayEvents(events) {
+            const grid = document.getElementById('events-grid');
+            
+            if (events.length === 0) {
+                grid.innerHTML = '<div class="no-events">No events found</div>';
+                return;
+            }
+            
+            grid.innerHTML = events.map(event => `
+                <div class="event-card">
+                    <div class="event-header">
+                        <span class="event-type">${event.event_type}</span>
+                        <span class="event-time">${formatTimestamp(event.start_time)}</span>
+                    </div>
+                    <div class="event-description">${event.description}</div>
+                    <div class="event-details">
+                        <div><strong>Duration:</strong> ${formatDuration(event.duration)}</div>
+                        <div><strong>Confidence:</strong> ${(event.confidence * 100).toFixed(1)}%</div>
+                    </div>
+                    ${event.transcription && event.transcription.text ? 
+                        `<div class="event-transcription"><strong>Transcription:</strong><br>${event.transcription.text.substring(0, 200)}${event.transcription.text.length > 200 ? '...' : ''}</div>` 
+                        : ''}
+                    <div class="event-actions">
+                        <button onclick="playVideo('${event.event_id}')">▶ Play Video</button>
+                        <button onclick="playAudio('${event.event_id}')">🔊 Play Audio</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function applyFilters() {
+            const typeFilter = document.getElementById('event-type-filter').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            
+            let filtered = allEvents;
+            
+            if (typeFilter) {
+                filtered = filtered.filter(e => e.event_type === typeFilter);
+            }
+            
+            if (startDate) {
+                const start = new Date(startDate).getTime() / 1000;
+                filtered = filtered.filter(e => e.start_time >= start);
+            }
+            
+            if (endDate) {
+                const end = new Date(endDate).getTime() / 1000;
+                filtered = filtered.filter(e => e.start_time <= end);
+            }
+            
+            displayEvents(filtered);
+        }
+        
+        function resetFilters() {
+            document.getElementById('event-type-filter').value = '';
+            document.getElementById('start-date').value = '';
+            document.getElementById('end-date').value = '';
+            displayEvents(allEvents);
+        }
+        
+        function playVideo(eventId) {
+            window.open(`/api/events/${eventId}/video`, '_blank');
+        }
+        
+        function playAudio(eventId) {
+            const audio = new Audio(`/api/events/${eventId}/audio`);
+            audio.play();
+        }
+        
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleString();
+        }
+        
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            }
+            return `${minutes}m`;
+        }
+        
+        // Load events on page load
+        loadEvents();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  agent-zero:
+    image: agent0ai/agent-zero:latest
+    container_name: agent-zero
+    ports:
+      - "50001:80"
+    restart: unless-stopped
+    volumes:
+      # Persist data across container restarts
+      - agent-zero-data:/app/data
+      - agent-zero-logs:/app/logs
+      - agent-zero-memory:/app/memory
+      - agent-zero-knowledge:/app/knowledge
+    environment:
+      # You can add environment variables here if needed
+      - TZ=America/New_York
+      # Uncomment and add your OpenRouter API key (or use Settings in web UI):
+      # - OPENROUTER_API_KEY=your-key-here
+      # Or use other provider keys:
+      # - OPENAI_API_KEY=your-key-here
+      # - ANTHROPIC_API_KEY=your-key-here
+      # - GOOGLE_API_KEY=your-key-here
+    networks:
+      - agent-zero-network
+
+volumes:
+  agent-zero-data:
+    driver: local
+  agent-zero-logs:
+    driver: local
+  agent-zero-memory:
+    driver: local
+  agent-zero-knowledge:
+    driver: local
+
+networks:
+  agent-zero-network:
+    driver: bridge
+

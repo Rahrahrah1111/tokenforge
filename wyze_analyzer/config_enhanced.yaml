@@ -1,0 +1,99 @@
+# Enhanced Configuration for Maximum Audio Quality Transcription
+# For October 5-7 with incredibly enhanced and amplified audio
+
+# Video Source Configuration
+video_source:
+  source_type: "sd_card"
+  sd_card_path: "/media/g-spot/B9E9-ABE9/record"
+
+# Analysis Settings
+analysis:
+  analysis_period_days: 3
+  
+  # Video processing settings
+  video:
+    fps: 1
+    resolution: [1920, 1080]
+    codec: "mp4v"
+  
+  # Event detection settings
+  event_detection:
+    motion_threshold: 0.3
+    min_event_duration: 2
+    max_event_duration: 300
+    detection_method: "frame_diff"
+  
+  # Audio processing settings - MAXIMUM ENHANCEMENT
+  audio:
+    sample_rate: 16000
+    channels: 1
+    bit_depth: 16
+    
+    # INCREDIBLY ENHANCED audio settings
+    enhancement:
+      noise_reduction: true
+      amplification: 3.0  # INCREASED from 1.5 to 3.0 for maximum amplification
+      high_pass_filter: 60  # Lower threshold to preserve more speech frequencies
+      low_pass_filter: 12000  # Higher threshold to preserve more speech frequencies
+      normalize: true
+      aggressive_noise_reduction: true  # Extra aggressive noise reduction
+  
+  # Speech transcription settings - HIGH QUALITY
+  transcription:
+    model: "medium"  # Better model for accuracy (not tiny/base)
+    language: "en"
+    device: "auto"
+    temperature: 0.0
+    beam_size: 5
+    best_of: 5
+    patience: 1.0
+    condition_on_previous_text: true
+    initial_prompt: "This is a security camera recording with ambient sounds and human speech. Focus on clear transcription of all spoken words."
+  
+  # Event categorization settings
+  categorization:
+    event_types:
+      - "human_detection"
+      - "motion"
+      - "sound_detection"
+      - "speech_detection"
+      - "vehicle"
+      - "animal"
+      - "package_delivery"
+      - "door_opening"
+      - "night_vision"
+    confidence_threshold: 0.6
+    use_ml_models: true
+
+# Output Settings
+output:
+  base_directory: "./transcriptions_enhanced_october"
+  folder_structure:
+    by_date: true
+    by_event_type: true
+    by_hour: false
+  file_naming:
+    include_timestamp: true
+    include_event_type: true
+    include_duration: true
+  export_formats:
+    - "mp4"
+    - "txt"
+    - "json"
+    - "csv"
+
+# Performance Settings
+performance:
+  max_workers: 4
+  chunk_size: 3600
+  use_gpu: true
+  max_memory_gb: 8
+  cleanup_temp_files: false  # Keep enhanced audio files
+
+# Logging
+logging:
+  level: "INFO"
+  log_file: "./wyze_analyzer_enhanced.log"
+  console_output: true
+
+

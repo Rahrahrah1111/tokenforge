@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.V.A. API Keys Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #f8f8ff;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: rgba(248, 248, 255, 0.7);
+            margin-bottom: 2rem;
+        }
+        
+        .key-section {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .key-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .key-title {
+            font-family: 'Orbitron', monospace;
+            color: #00ffff;
+            font-size: 1.2rem;
+        }
+        
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status.set {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid rgba(0, 255, 0, 0.5);
+        }
+        
+        .status.not-set {
+            background: rgba(255, 191, 0, 0.2);
+            color: #ffbf00;
+            border: 1px solid rgba(255, 191, 0, 0.5);
+        }
+        
+        .key-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            color: #f8f8ff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .key-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .key-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00ffff, #20b2aa);
+            color: #0a0a0a;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        .link-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(138, 43, 226, 0.2);
+            color: #8a2be2;
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .link-btn:hover {
+            background: rgba(138, 43, 226, 0.3);
+        }
+        
+        .info {
+            background: rgba(255, 191, 0, 0.1);
+            border: 1px solid rgba(255, 191, 0, 0.3);
+            border-radius: 5px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-title {
+            color: #ffbf00;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .actions {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .success-message {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 5px;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #00ff00;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 A.V.A. API Keys Setup</h1>
+        <p class="subtitle">Configure your API keys for enhanced A.V.A. capabilities</p>
+        <div style="background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 5px; padding: 1rem; margin-bottom: 2rem;">
+            <div style="color: #00ffff; font-weight: 600; margin-bottom: 0.5rem;">✨ Auto-Detector Active</div>
+            <div style="font-size: 0.9rem; color: rgba(248, 248, 255, 0.8);">
+                Just copy your API keys from the signup pages - they'll be automatically detected and saved! No need to paste them here manually.
+            </div>
+        </div>
+        
+        <!-- Google AI Key -->
+        <div class="key-section">
+            <div class="key-header">
+                <div class="key-title">Google AI (Gemini)</div>
+                <span class="status" id="google-status">Not Set</span>
+            </div>
+            <input type="text" 
+                   class="key-input" 
+                   id="google-key" 
+                   placeholder="AIza... (Get from https://makersuite.google.com/app/apikey)"
+                   value="">
+            <div class="key-actions">
+                <button class="btn btn-primary" onclick="saveKey('google')">Save Key</button>
+                <a href="https://makersuite.google.com/app/apikey" target="_blank" class="link-btn">Get Free Key →</a>
+            </div>
+            <div class="info">
+                <div class="info-title">ℹ️ Free Tier</div>
+                <div>60 requests/minute, 1,500 requests/day - Perfect for personal use!</div>
+            </div>
+        </div>
+        
+        <!-- Tavily Key -->
+        <div class="key-section">
+            <div class="key-header">
+                <div class="key-title">Tavily Search</div>
+                <span class="status" id="tavily-status">Not Set</span>
+            </div>
+            <input type="text" 
+                   class="key-input" 
+                   id="tavily-key" 
+                   placeholder="tvly-... (Get from https://tavily.com)"
+                   value="">
+            <div class="key-actions">
+                <button class="btn btn-primary" onclick="saveKey('tavily')">Save Key</button>
+                <a href="https://tavily.com" target="_blank" class="link-btn">Get Free Key →</a>
+            </div>
+            <div class="info">
+                <div class="info-title">ℹ️ Free Tier</div>
+                <div>1,000 searches/month - Great for research queries!</div>
+            </div>
+        </div>
+        
+        <!-- Discord Token -->
+        <div class="key-section">
+            <div class="key-header">
+                <div class="key-title">Discord Bot Token (Optional)</div>
+                <span class="status" id="discord-status">Not Set</span>
+            </div>
+            <input type="text" 
+                   class="key-input" 
+                   id="discord-key" 
+                   placeholder="Your Discord bot token (Get from https://discord.com/developers/applications)"
+                   value="">
+            <div class="key-actions">
+                <button class="btn btn-primary" onclick="saveKey('discord')">Save Token</button>
+                <a href="https://discord.com/developers/applications" target="_blank" class="link-btn">Get Token →</a>
+            </div>
+            <div class="info">
+                <div class="info-title">ℹ️ Free & Unlimited</div>
+                <div>Personal bots are completely free with no limits!</div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-primary btn-large" onclick="checkAllKeys()">Check All Keys</button>
+            <button class="btn btn-secondary btn-large" onclick="goToAVA()" style="margin-left: 1rem;">Go to A.V.A. →</button>
+        </div>
+        
+        <div class="success-message" id="success-message"></div>
+    </div>
+    
+    <script src="auto_key_detector.js"></script>
+    <script>
+        // Key mappings
+        const keyMap = {
+            'google': { storage: 'GOOGLE_API_KEY', status: 'google-status', input: 'google-key' },
+            'tavily': { storage: 'TAVILY_API_KEY', status: 'tavily-status', input: 'tavily-key' },
+            'discord': { storage: 'DISCORD_TOKEN', status: 'discord-status', input: 'discord-key' }
+        };
+        
+        // Load existing keys
+        function loadKeys() {
+            Object.keys(keyMap).forEach(key => {
+                const config = keyMap[key];
+                const stored = localStorage.getItem(config.storage);
+                if (stored) {
+                    document.getElementById(config.input).value = stored;
+                    updateStatus(key, true);
+                } else {
+                    updateStatus(key, false);
+                }
+            });
+        }
+        
+        // Save key
+        function saveKey(key) {
+            const config = keyMap[key];
+            const input = document.getElementById(config.input);
+            const value = input.value.trim();
+            
+            if (!value) {
+                alert('Please enter a key');
+                return;
+            }
+            
+            localStorage.setItem(config.storage, value);
+            updateStatus(key, true);
+            showSuccess(`${key.toUpperCase()} key saved successfully!`);
+        }
+        
+        // Update status
+        function updateStatus(key, isSet) {
+            const config = keyMap[key];
+            const statusEl = document.getElementById(config.status);
+            if (isSet) {
+                statusEl.textContent = '✅ Set';
+                statusEl.className = 'status set';
+            } else {
+                statusEl.textContent = 'Not Set';
+                statusEl.className = 'status not-set';
+            }
+        }
+        
+        // Check all keys
+        function checkAllKeys() {
+            let allSet = true;
+            Object.keys(keyMap).forEach(key => {
+                const config = keyMap[key];
+                const stored = localStorage.getItem(config.storage);
+                if (stored) {
+                    updateStatus(key, true);
+                } else {
+                    updateStatus(key, false);
+                    allSet = false;
+                }
+            });
+            
+            if (allSet) {
+                showSuccess('All keys are set! You\'re ready to use A.V.A. with full capabilities.');
+            } else {
+                showSuccess('Some keys are missing. Set them to unlock all features.');
+            }
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            const msgEl = document.getElementById('success-message');
+            msgEl.textContent = message;
+            msgEl.classList.add('show');
+            setTimeout(() => {
+                msgEl.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Go to A.V.A.
+        function goToAVA() {
+            window.location.href = 'index.html';
+        }
+        
+        // Initialize
+        loadKeys();
+        
+        // Auto-check on input
+        Object.keys(keyMap).forEach(key => {
+            const input = document.getElementById(keyMap[key].input);
+            input.addEventListener('input', () => {
+                const value = input.value.trim();
+                if (value && localStorage.getItem(keyMap[key].storage) === value) {
+                    updateStatus(key, true);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

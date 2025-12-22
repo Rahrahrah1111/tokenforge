@@ -1,0 +1,126 @@
+# Wyze Camera Analyzer Configuration
+
+# Video Source Configuration
+video_source:
+  # Options: "sd_card", "api", "cloud"
+  source_type: "sd_card"
+  
+  # SD Card path (if using SD card)
+  sd_card_path: "/media/sd_card"
+  
+  # Wyze API credentials (if using API)
+  wyze_api:
+    email: ""
+    password: ""
+    api_key: ""
+  
+  # Cloud service credentials (if using cloud)
+  cloud:
+    access_token: ""
+    device_id: ""
+
+# Analysis Settings
+analysis:
+  # Time period to analyze (in days)
+  analysis_period_days: 14
+  
+  # Video processing settings
+  video:
+    fps: 1  # Frames per second to analyze (lower = faster but less detailed)
+    resolution: [1920, 1080]  # Target resolution
+    codec: "mp4v"
+  
+  # Event detection settings
+  event_detection:
+    motion_threshold: 0.3  # Motion detection sensitivity (0.0-1.0)
+    min_event_duration: 2  # Minimum event duration in seconds
+    max_event_duration: 300  # Maximum event duration in seconds
+    detection_method: "frame_diff"  # Options: "frame_diff", "optical_flow", "motion_vectors"
+  
+  # Audio processing settings
+  audio:
+    sample_rate: 16000  # Target sample rate for transcription
+    channels: 1  # Mono audio
+    bit_depth: 16
+    
+    # Audio enhancement settings
+    enhancement:
+      noise_reduction: true
+      amplification: 1.5  # Audio amplification factor
+      high_pass_filter: 80  # Hz - remove low frequency noise
+      low_pass_filter: 8000  # Hz - remove high frequency noise
+      normalize: true
+  
+  # Speech transcription settings
+  transcription:
+    model: "base"  # Options: "tiny", "base", "small", "medium", "large"
+    language: "en"  # Language code
+    device: "auto"  # "auto", "cpu", "cuda"
+    temperature: 0.0
+    beam_size: 5
+    best_of: 5
+    patience: 1.0
+    condition_on_previous_text: true
+    initial_prompt: "This is a security camera recording with ambient sounds and human speech."
+  
+  # Event categorization settings
+  categorization:
+    # Event types to detect
+    event_types:
+      - "human_detection"
+      - "motion"
+      - "sound_detection"
+      - "speech_detection"
+      - "vehicle"
+      - "animal"
+      - "package_delivery"
+      - "door_opening"
+      - "night_vision"
+    
+    # Confidence thresholds
+    confidence_threshold: 0.6
+    
+    # Use ML models for categorization
+    use_ml_models: true
+
+# Output Settings
+output:
+  # Base directory for organized output
+  base_directory: "./wyze_analysis_output"
+  
+  # Folder structure
+  folder_structure:
+    by_date: true
+    by_event_type: true
+    by_hour: false
+  
+  # File naming
+  file_naming:
+    include_timestamp: true
+    include_event_type: true
+    include_duration: true
+  
+  # Export formats
+  export_formats:
+    - "mp4"  # Video clips
+    - "txt"  # Transcripts
+    - "json"  # Metadata
+    - "csv"  # Event log
+
+# Performance Settings
+performance:
+  # Processing
+  max_workers: 4  # Number of parallel workers
+  chunk_size: 3600  # Process video in chunks (seconds)
+  use_gpu: true  # Use GPU if available
+  
+  # Memory management
+  max_memory_gb: 8
+  cleanup_temp_files: true
+  
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "./wyze_analyzer.log"
+  console_output: true
+

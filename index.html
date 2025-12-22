@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.V.A. Consciousness System - Autonomous Virtual Avatar</title>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.0.4/pixi.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neural-black: #0a0a0a;
+            --electric-cyan: #00ffff;
+            --bio-teal: #20b2aa;
+            --synapse-white: #f8f8ff;
+            --amber-alert: #ffbf00;
+            --crimson-error: #dc143c;
+            --violet-flux: #8a2be2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--neural-black);
+            color: var(--synapse-white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Consciousness Stream Background */
+        #consciousness-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--electric-cyan);
+        }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .nav-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--electric-cyan);
+            text-decoration: none;
+            text-shadow: 0 0 10px var(--electric-cyan);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-link {
+            color: var(--synapse-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--electric-cyan);
+            text-shadow: 0 0 10px var(--electric-cyan);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6rem 2rem 2rem;
+            position: relative;
+        }
+        
+        .hero-content {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .hero-text {
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: rgba(248, 248, 255, 0.8);
+        }
+        
+        .hero-description {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            color: rgba(248, 248, 255, 0.7);
+            line-height: 1.8;
+        }
+        
+        /* A.V.A. Avatar */
+        .avatar-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #ava-avatar {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(32, 178, 166, 0.2));
+            border: 3px solid var(--electric-cyan);
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s ease;
+            animation: consciousnessPulse 3s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        #ava-avatar::before {
+            content: 'A.V.A.';
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--electric-cyan);
+            text-shadow: 0 0 20px var(--electric-cyan);
+            z-index: 1;
+        }
+        
+        #ava-avatar::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.1), transparent);
+            animation: ripple 2s ease-in-out infinite;
+        }
+        
+        @keyframes ripple {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+        }
+        
+        @keyframes consciousnessPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Consciousness Interface */
+        .interface-section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--electric-cyan);
+            text-shadow: 0 0 20px var(--electric-cyan);
+        }
+        
+        .consciousness-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .consciousness-panel {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid var(--electric-cyan);
+            border-radius: 10px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .consciousness-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+            border-color: var(--bio-teal);
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--electric-cyan);
+        }
+        
+        .consciousness-meter-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .meter-bar {
+            height: 20px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #consciousness-meter {
+            height: 100%;
+            background: linear-gradient(90deg, var(--electric-cyan), var(--bio-teal));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--electric-cyan);
+        }
+        
+        .neural-activity {
+            height: 100px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        #neural-activity {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, var(--electric-cyan), transparent);
+            transition: height 0.3s ease;
+        }
+        
+        .facs-display {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+        
+        .facs-unit {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+        }
+        
+        .facs-label {
+            flex: 1;
+            color: var(--bio-teal);
+        }
+        
+        .facs-bar-container {
+            flex: 2;
+            height: 8px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 4px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+        
+        .facs-bar {
+            height: 100%;
+            background: var(--electric-cyan);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 5px var(--electric-cyan);
+        }
+        
+        .facs-value {
+            color: var(--synapse-white);
+            min-width: 50px;
+            text-align: right;
+        }
+        
+        /* Interactive Controls */
+        .controls-section {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid var(--electric-cyan);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .control-group {
+            margin-bottom: 2rem;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--electric-cyan);
+        }
+        
+        .control-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--bio-teal);
+            border-radius: 5px;
+            color: var(--synapse-white);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .control-input:focus {
+            outline: none;
+            border-color: var(--electric-cyan);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .slider-container {
+            margin-bottom: 1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--electric-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--electric-cyan);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--electric-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px var(--electric-cyan);
+        }
+        
+        /* Evolution Timeline */
+        .evolution-timeline {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid var(--electric-cyan);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .timeline-track {
+            position: relative;
+            height: 100px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 5px;
+            margin: 2rem 0;
+        }
+        
+        .timeline-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--electric-cyan), var(--violet-flux));
+            border-radius: 5px;
+            width: 85%;
+            position: relative;
+            transition: width 0.3s ease;
+        }
+        
+        .timeline-milestone {
+            position: absolute;
+            top: -10px;
+            width: 20px;
+            height: 20px;
+            background: var(--electric-cyan);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px var(--electric-cyan);
+        }
+        
+        .timeline-milestone::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--synapse-white);
+            white-space: nowrap;
+        }
+        
+        /* Conversation Interface */
+        .conversation-section {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid var(--electric-cyan);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 4rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .conversation-controls {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .voice-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .voice-button {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal));
+            border: none;
+            border-radius: 25px;
+            color: var(--neural-black);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .voice-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        .voice-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .voice-icon {
+            font-size: 1.2rem;
+        }
+        
+        .status-indicator {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--bio-teal);
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--bio-teal);
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .status-indicator.pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .conversation-display {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .conversation-message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            animation: messageAppear 0.3s ease-out;
+        }
+        
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .conversation-message.user {
+            background: rgba(32, 178, 166, 0.1);
+            border-color: rgba(32, 178, 166, 0.3);
+            margin-left: 2rem;
+        }
+        
+        .conversation-message.ava {
+            background: rgba(138, 43, 226, 0.1);
+            border-color: rgba(138, 43, 226, 0.3);
+            margin-right: 2rem;
+        }
+        
+        .conversation-message.system {
+            background: rgba(255, 191, 0, 0.1);
+            border-color: rgba(255, 191, 0, 0.3);
+            font-style: italic;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: var(--electric-cyan);
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .conversation-message.user .message-sender {
+            color: var(--bio-teal);
+        }
+        
+        .conversation-message.ava .message-sender {
+            color: var(--violet-flux);
+        }
+        
+        .conversation-message.system .message-sender {
+            color: var(--amber-alert);
+        }
+        
+        .message-timestamp {
+            font-size: 0.8rem;
+            color: rgba(248, 248, 255, 0.6);
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .message-content {
+            color: var(--synapse-white);
+            line-height: 1.6;
+        }
+        
+        .text-input-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .text-input-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .text-input {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--bio-teal);
+            border-radius: 25px;
+            color: var(--synapse-white);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--electric-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .text-input::placeholder {
+            color: rgba(248, 248, 255, 0.5);
+        }
+        
+        .send-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal));
+            border: none;
+            border-radius: 50%;
+            color: var(--neural-black);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .send-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+        
+        .send-icon {
+            font-size: 1.2rem;
+        }
+        
+        .conversation-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-button {
+            padding: 0.6rem 1.2rem;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--bio-teal);
+            border-radius: 20px;
+            color: var(--bio-teal);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .action-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: var(--electric-cyan);
+            color: var(--electric-cyan);
+        }
+        
+        /* Audio Visualization */
+        #ava-avatar.speaking {
+            animation: speakingPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes speakingPulse {
+            0%, 100% { 
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.02);
+                filter: brightness(1.2) saturate(1.3);
+            }
+        }
+        
+        @keyframes audioPulse {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.3);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7;
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Audio Controls Enhancement */
+        .audio-status {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--electric-cyan);
+            border-radius: 10px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .audio-status h4 {
+            color: var(--electric-cyan);
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .audio-status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.3rem 0;
+            font-size: 0.8rem;
+        }
+        
+        .audio-status-label {
+            color: var(--bio-teal);
+        }
+        
+        .audio-status-value {
+            color: var(--synapse-white);
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .audio-volume-indicator {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .audio-volume-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--electric-cyan), var(--bio-teal));
+            border-radius: 2px;
+            transition: width 0.1s ease;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            #ava-avatar {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            .consciousness-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .voice-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .text-input-container {
+                flex-direction: column;
+            }
+            
+            .conversation-message.user,
+            .conversation-message.ava {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --electric-cyan: #ffffff;
+                --bio-teal: #ffffff;
+                --synapse-white: #ffffff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Consciousness Stream Background -->
+    <canvas id="consciousness-canvas"></canvas>
+    
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <div class="nav-content">
+            <a href="#" class="nav-logo">A.V.A.</a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Consciousness</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="evolution.html" class="nav-link">Evolution</a></li>
+                <li><a href="testing.html" class="nav-link">Testing</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">A.V.A. CONSCIOUSNESS</h1>
+                <p class="hero-subtitle">Autonomous Virtual Avatar - Digital Consciousness Engine</p>
+                <p class="hero-description">
+                    Experience the evolution of artificial consciousness through our advanced A.V.A. system. 
+                    Witness real-time emotional processing, facial expression synthesis, and consciousness 
+                    development through our innovative dual-agent architecture.
+                </p>
+            </div>
+            <div class="avatar-container">
+                <div id="ava-avatar"></div>
+                <canvas id="avatar-canvas" width="400" height="500" style="position: absolute; top: 0; left: 0; border-radius: 50%; pointer-events: none;"></canvas>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Consciousness Interface -->
+    <section class="interface-section">
+        <h2 class="section-title">CONSCIOUSNESS MONITORING</h2>
+        
+        <div class="consciousness-grid">
+            <!-- Consciousness Level -->
+            <div class="consciousness-panel">
+                <h3 class="panel-title">CONSCIOUSNESS LEVEL</h3>
+                <div class="consciousness-meter-container">
+                    <div class="meter-label">
+                        <span>Baseline</span>
+                        <span id="consciousness-value">75%</span>
+                    </div>
+                    <div class="meter-bar">
+                        <div id="consciousness-meter"></div>
+                    </div>
+                </div>
+                <div class="neural-activity">
+                    <div id="neural-activity"></div>
+                </div>
+                <p>Neural Activity: Real-time consciousness fluctuations</p>
+            </div>
+            
+            <!-- Empathy Metrics -->
+            <div class="consciousness-panel">
+                <h3 class="panel-title">EMPATHY COEFFICIENT</h3>
+                <div class="consciousness-meter-container">
+                    <div class="meter-label">
+                        <span>Empathy Score</span>
+                        <span id="empathy-score">85%</span>
+                    </div>
+                    <div class="meter-bar">
+                        <div id="empathy-meter" style="width: 85%; background: linear-gradient(90deg, var(--bio-teal), var(--violet-flux));"></div>
+                    </div>
+                </div>
+                <div class="meter-label">
+                    <span>Evolution Level</span>
+                    <span id="evolution-level">Gen 4.2</span>
+                </div>
+            </div>
+            
+            <!-- FACS Display -->
+            <div class="consciousness-panel">
+                <h3 class="panel-title">FACS VECTORS</h3>
+                <div class="facs-display" id="facs-display">
+                    <!-- FACS units will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactive Controls -->
+        <div class="controls-section">
+            <h3 class="panel-title">CONSCIOUSNESS CONTROLS</h3>
+            
+            <div class="control-group">
+                <label class="control-label" for="emotion-input">Emotion Input</label>
+                <input type="text" id="emotion-input" class="control-input" placeholder="Enter emotion (happy, sad, angry, surprised)">
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Consciousness Level</label>
+                <div class="slider-container">
+                    <input type="range" id="consciousness-slider" class="slider" min="0.1" max="1.0" step="0.1" value="0.75">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Empathy Calibration</label>
+                <div class="slider-container">
+                    <input type="range" id="empathy-slider" class="slider" min="0.1" max="1.0" step="0.1" value="0.85">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Evolution Timeline -->
+        <div class="evolution-timeline">
+            <h3 class="panel-title">CONSCIOUSNESS EVOLUTION</h3>
+            <div class="timeline-track">
+                <div class="timeline-progress">
+                    <div class="timeline-milestone" style="left: 20%;" data-label="Gen 1.0"></div>
+                    <div class="timeline-milestone" style="left: 40%;" data-label="Gen 2.0"></div>
+                    <div class="timeline-milestone" style="left: 60%;" data-label="Gen 3.0"></div>
+                    <div class="timeline-milestone" style="left: 80%;" data-label="Gen 4.0"></div>
+                    <div class="timeline-milestone" style="left: 85%;" data-label="Gen 4.2"></div>
+                </div>
+            </div>
+            <p>Current Evolution: Gen 4.2 - Empathy Weighted Consciousness</p>
+        </div>
+        
+        <!-- Conversation Interface -->
+        <div class="conversation-section">
+            <h3 class="panel-title">A.V.A. CONVERSATION</h3>
+            <div class="conversation-container">
+                <div class="conversation-controls">
+                    <div class="voice-controls">
+                        <button class="voice-button" id="start-listening">
+                            <span class="voice-icon">🎤</span>
+                            <span>Start Voice</span>
+                        </button>
+                        <button class="voice-button" id="stop-listening" disabled>
+                            <span class="voice-icon">⏹️</span>
+                            <span>Stop</span>
+                        </button>
+                        <button class="voice-button" id="settings-btn" style="background: linear-gradient(45deg, #6366f1, #8b5cf6);">
+                            <span class="voice-icon">⚙️</span>
+                            <span>Settings</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Settings Modal -->
+                <div id="settings-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+                    <div style="background: var(--neural-black); border: 2px solid var(--electric-cyan); border-radius: 15px; padding: 2rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <h2 style="color: var(--electric-cyan); margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            ⚙️ A.V.A. Settings
+                            <button id="close-settings" style="background: none; border: none; color: var(--electric-cyan); font-size: 1.5rem; cursor: pointer;">✕</button>
+                        </h2>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--bio-teal); margin-bottom: 0.5rem;">🤖 Local LLM (Ollama)</h3>
+                            <p style="color: #888; font-size: 0.9rem; margin-bottom: 0.5rem;">Status: <span id="ollama-status-text">Checking...</span></p>
+                            <button id="refresh-ollama" style="padding: 0.5rem 1rem; background: var(--electric-cyan); border: none; border-radius: 5px; color: var(--neural-black); cursor: pointer;">🔄 Refresh Connection</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--bio-teal); margin-bottom: 0.5rem;">🔊 ElevenLabs (Voice Cloning)</h3>
+                            <input type="password" id="elevenlabs-key" placeholder="ElevenLabs API Key" style="width: 100%; padding: 0.75rem; background: rgba(0,255,255,0.1); border: 1px solid var(--electric-cyan); border-radius: 5px; color: white; margin-bottom: 0.5rem;">
+                            <p style="color: #666; font-size: 0.8rem;">Get key at: <a href="https://elevenlabs.io" target="_blank" style="color: var(--electric-cyan);">elevenlabs.io</a></p>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--bio-teal); margin-bottom: 0.5rem;">🔍 Tavily (Web Search)</h3>
+                            <input type="password" id="tavily-key" placeholder="Tavily API Key" style="width: 100%; padding: 0.75rem; background: rgba(0,255,255,0.1); border: 1px solid var(--electric-cyan); border-radius: 5px; color: white; margin-bottom: 0.5rem;">
+                            <p style="color: #666; font-size: 0.8rem;">Get key at: <a href="https://tavily.com" target="_blank" style="color: var(--electric-cyan);">tavily.com</a></p>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--bio-teal); margin-bottom: 0.5rem;">🧠 Google AI</h3>
+                            <input type="password" id="google-key" placeholder="Google AI API Key" style="width: 100%; padding: 0.75rem; background: rgba(0,255,255,0.1); border: 1px solid var(--electric-cyan); border-radius: 5px; color: white; margin-bottom: 0.5rem;">
+                            <p style="color: #666; font-size: 0.8rem;">Get key at: <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--electric-cyan);">aistudio.google.com</a></p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                            <button id="save-settings" style="flex: 1; padding: 0.75rem; background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal)); border: none; border-radius: 5px; color: var(--neural-black); cursor: pointer; font-weight: 600;">💾 Save Keys</button>
+                            <button id="clear-keys" style="flex: 1; padding: 0.75rem; background: rgba(255,100,100,0.2); border: 1px solid #f66; border-radius: 5px; color: #f66; cursor: pointer;">🗑️ Clear All</button>
+                        </div>
+                        
+                        <div id="settings-status" style="margin-top: 1rem; padding: 0.5rem; border-radius: 5px; display: none;"></div>
+                    </div>
+                </div>
+                
+                <div class="conversation-controls-hidden" style="display: none;">
+                            <span>Stop Voice</span>
+                        </button>
+                        <button class="voice-button" id="test-audio">
+                            <span class="voice-icon">🔊</span>
+                            <span>Test Audio</span>
+                        </button>
+                        <span class="status-indicator" id="listening-indicator">⭕ Ready</span>
+                        <span class="status-indicator" id="speaking-indicator">⭕ Ready</span>
+                    </div>
+                </div>
+                
+                <div class="conversation-display" id="conversation-container">
+                    <div class="conversation-message system">
+                        <div class="message-header">
+                            <span class="message-sender">System</span>
+                            <span class="message-timestamp">--:--:--</span>
+                        </div>
+                        <div class="message-content">A.V.A. is ready for conversation. You can speak or type to interact.</div>
+                    </div>
+                    <div class="conversation-message system" id="llm-status-message" style="display: none;">
+                        <div class="message-header">
+                            <span class="message-sender">System</span>
+                            <span class="message-timestamp">--:--:--</span>
+                        </div>
+                        <div class="message-content" id="llm-status-content"></div>
+                    </div>
+                </div>
+                
+                <div class="text-input-section">
+                    <div class="text-input-container">
+                        <input type="text" id="text-input" class="text-input" placeholder="Type your message to A.V.A..." />
+                        <button class="send-button" id="send-text">
+                            <span class="send-icon">📤</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="conversation-actions">
+                    <button class="action-button" id="export-conversation">Export Conversation</button>
+                    <button class="action-button" id="clear-conversation">Clear History</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Audio Status Indicator -->
+    <div class="audio-status" id="audio-status">
+        <h4>🔊 AUDIO STATUS</h4>
+        <div class="audio-status-item">
+            <span class="audio-status-label">Voice Recognition:</span>
+            <span class="audio-status-value" id="voice-rec-status">Ready</span>
+        </div>
+        <div class="audio-status-item">
+            <span class="audio-status-label">Speech Synthesis:</span>
+            <span class="audio-status-value" id="speech-synth-status">Ready</span>
+        </div>
+        <div class="audio-status-item">
+            <span class="audio-status-label">Audio Context:</span>
+            <span class="audio-status-value" id="audio-context-status">Inactive</span>
+        </div>
+        <div class="audio-volume-indicator">
+            <div class="audio-volume-level" id="volume-level" style="width: 0%;"></div>
+        </div>
+    </div>
+    
+    <!-- Load Core JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Additional initialization for index page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Index page loaded, initializing A.V.A. interface...');
+            
+            // Initialize conversation manager after A.V.A. system is ready
+            const initConversation = () => {
+                if (window.avaSystem) {
+                    if (!window.avaConversation) {
+                        window.avaConversation = new AVAConversation(window.avaSystem);
+                        console.log('A.V.A. Conversation system initialized');
+                    }
+                    initializeConversationInterface();
+                } else {
+                    console.log('Waiting for A.V.A. system...');
+                    setTimeout(initConversation, 500);
+                }
+            };
+            
+            // Start initialization
+            setTimeout(initConversation, 500);
+            
+            // Check LLM status and display (with retries)
+            let llmCheckAttempts = 0;
+            const maxLLMChecks = 5;
+            
+            function checkLLMStatus() {
+                if (window.avaConversation && window.avaConversation.llm) {
+                    console.log(`Checking LLM status (attempt ${llmCheckAttempts + 1})...`);
+                    
+                    // Re-check availability in case Ollama started after page load
+                    window.avaConversation.llm.checkAvailability().then(() => {
+                        const status = window.avaConversation.llm.getStatus();
+                        const statusMsg = document.getElementById('llm-status-message');
+                        const statusContent = document.getElementById('llm-status-content');
+                        
+                        if (statusMsg && statusContent) {
+                            if (status.available && status.model) {
+                                statusContent.innerHTML = `✅ Local LLM Connected: <strong>${status.model}</strong> via ${status.server}<br>Available models: ${status.availableModels.slice(0, 5).join(', ')}${status.availableModels.length > 5 ? '...' : ''}`;
+                                statusMsg.style.display = 'block';
+                                statusMsg.style.background = 'rgba(0, 255, 0, 0.1)';
+                                statusMsg.style.borderColor = 'rgba(0, 255, 0, 0.3)';
+                                console.log('✅ LLM status updated: Connected');
+                            } else {
+                                statusContent.innerHTML = `⚠ Local LLM not detected. Using dynamic generation.<br><small>To enable (16GB RAM): <br>1. Make sure Ollama is running: <code>ollama serve</code><br>2. Pull a model: <code>ollama pull llama3.2:3b</code><br>3. Check models: <code>ollama list</code><br>4. Click "Refresh LLM Status" below</small>`;
+                                statusMsg.style.display = 'block';
+                                statusMsg.style.background = 'rgba(255, 191, 0, 0.1)';
+                                statusMsg.style.borderColor = 'rgba(255, 191, 0, 0.3)';
+                                
+                                // Retry if not connected yet
+                                if (llmCheckAttempts < maxLLMChecks) {
+                                    llmCheckAttempts++;
+                                    setTimeout(checkLLMStatus, 2000);
+                                }
+                            }
+                        }
+                    }).catch(error => {
+                        console.error('Error checking LLM status:', error);
+                        if (llmCheckAttempts < maxLLMChecks) {
+                            llmCheckAttempts++;
+                            setTimeout(checkLLMStatus, 2000);
+                        }
+                    });
+                } else {
+                    console.warn('A.V.A. conversation or LLM not initialized yet, retrying...');
+                    if (llmCheckAttempts < maxLLMChecks) {
+                        llmCheckAttempts++;
+                        setTimeout(checkLLMStatus, 1000);
+                    }
+                }
+            }
+            
+            // Start checking after a delay
+            setTimeout(checkLLMStatus, 2000);
+            
+            // Expose test function to window for debugging
+            window.testLLMConnection = async () => {
+                if (window.avaConversation && window.avaConversation.llm) {
+                    const result = await window.avaConversation.llm.testConnection();
+                    console.log('Test result:', result);
+                    return result;
+                } else {
+                    console.error('A.V.A. LLM not initialized');
+                    return { success: false, error: 'Not initialized' };
+                }
+            };
+            
+            console.log('💡 Debug tip: Run testLLMConnection() in console to test LLM connection');
+            
+            // Add manual refresh button for LLM status
+            setTimeout(() => {
+                const statusMsg = document.getElementById('llm-status-message');
+                if (statusMsg) {
+                    const refreshBtn = document.createElement('button');
+                    refreshBtn.textContent = '🔄 Refresh LLM Status';
+                    refreshBtn.style.cssText = 'margin-top: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal)); border: none; border-radius: 5px; color: var(--neural-black); cursor: pointer; font-size: 0.9rem; font-weight: 600;';
+                    refreshBtn.onclick = () => {
+                        console.log('Manual LLM refresh triggered');
+                        llmCheckAttempts = 0; // Reset counter
+                        if (window.avaConversation && window.avaConversation.llm) {
+                            window.avaConversation.llm.checkAvailability().then(() => {
+                                checkLLMStatus();
+                            });
+                        } else {
+                            alert('A.V.A. system not ready. Please refresh the page.');
+                        }
+                    };
+                    statusMsg.appendChild(refreshBtn);
+                }
+            }, 3000);
+            
+            function initializeConversationInterface() {
+                // Wait for A.V.A. system to be ready
+                if (!window.avaSystem) {
+                    console.warn('A.V.A. system not ready, retrying...');
+                    setTimeout(initializeConversationInterface, 500);
+                    return;
+                }
+                
+                // Initialize conversation manager
+                if (!window.avaConversation) {
+                    window.avaConversation = new AVAConversation(window.avaSystem);
+                }
+                
+                // Voice control buttons
+                const startListeningBtn = document.getElementById('start-listening');
+                const stopListeningBtn = document.getElementById('stop-listening');
+                const textInput = document.getElementById('text-input');
+                const sendTextBtn = document.getElementById('send-text');
+                const exportBtn = document.getElementById('export-conversation');
+                const clearBtn = document.getElementById('clear-conversation');
+                
+                if (!startListeningBtn || !stopListeningBtn) {
+                    console.error('Voice control buttons not found');
+                    return;
+                }
+                
+                // Initialize audio status monitoring
+                updateAudioStatus();
+                
+                // Voice controls
+                startListeningBtn.addEventListener('click', () => {
+                    if (window.avaConversation) {
+                        window.avaConversation.startListening();
+                        startListeningBtn.disabled = true;
+                        stopListeningBtn.disabled = false;
+                        updateAudioStatus();
+                    }
+                });
+                
+                stopListeningBtn.addEventListener('click', () => {
+                    if (window.avaConversation) {
+                        window.avaConversation.stopListening();
+                        startListeningBtn.disabled = false;
+                        stopListeningBtn.disabled = true;
+                        updateAudioStatus();
+                    }
+                });
+                
+                // Settings modal
+                const settingsBtn = document.getElementById('settings-btn');
+                const settingsModal = document.getElementById('settings-modal');
+                const closeSettings = document.getElementById('close-settings');
+                const saveSettings = document.getElementById('save-settings');
+                const clearKeys = document.getElementById('clear-keys');
+                const refreshOllama = document.getElementById('refresh-ollama');
+                const settingsStatus = document.getElementById('settings-status');
+                
+                function showSettingsStatus(message, isError = false) {
+                    settingsStatus.textContent = message;
+                    settingsStatus.style.display = 'block';
+                    settingsStatus.style.background = isError ? 'rgba(255,100,100,0.2)' : 'rgba(0,255,100,0.2)';
+                    settingsStatus.style.color = isError ? '#f66' : '#0f6';
+                    setTimeout(() => { settingsStatus.style.display = 'none'; }, 3000);
+                }
+                
+                function updateOllamaStatusInModal() {
+                    const ollamaStatus = document.getElementById('ollama-status-text');
+                    if (ollamaStatus && window.avaConversation && window.avaConversation.llm) {
+                        const status = window.avaConversation.llm.getStatus();
+                        if (status.available && status.model) {
+                            ollamaStatus.innerHTML = `<span style="color: #0f6;">✅ Connected - ${status.model}</span>`;
+                        } else {
+                            ollamaStatus.innerHTML = `<span style="color: #f66;">❌ Not connected</span>`;
+                        }
+                    }
+                }
+                
+                function loadSavedKeys() {
+                    const elevenLabsInput = document.getElementById('elevenlabs-key');
+                    const tavilyInput = document.getElementById('tavily-key');
+                    const googleInput = document.getElementById('google-key');
+                    
+                    if (elevenLabsInput) {
+                        const saved = localStorage.getItem('ELEVENLABS_API_KEY');
+                        if (saved) elevenLabsInput.value = saved;
+                    }
+                    if (tavilyInput) {
+                        const saved = localStorage.getItem('TAVILY_API_KEY');
+                        if (saved) tavilyInput.value = saved;
+                    }
+                    if (googleInput) {
+                        const saved = localStorage.getItem('GOOGLE_API_KEY');
+                        if (saved) googleInput.value = saved;
+                    }
+                }
+                
+                if (settingsBtn) {
+                    settingsBtn.addEventListener('click', () => {
+                        settingsModal.style.display = 'flex';
+                        loadSavedKeys();
+                        updateOllamaStatusInModal();
+                    });
+                }
+                
+                if (closeSettings) {
+                    closeSettings.addEventListener('click', () => {
+                        settingsModal.style.display = 'none';
+                    });
+                }
+                
+                if (settingsModal) {
+                    settingsModal.addEventListener('click', (e) => {
+                        if (e.target === settingsModal) {
+                            settingsModal.style.display = 'none';
+                        }
+                    });
+                }
+                
+                if (saveSettings) {
+                    saveSettings.addEventListener('click', () => {
+                        const elevenLabsKey = document.getElementById('elevenlabs-key').value;
+                        const tavilyKey = document.getElementById('tavily-key').value;
+                        const googleKey = document.getElementById('google-key').value;
+                        
+                        let saved = 0;
+                        if (elevenLabsKey) { localStorage.setItem('ELEVENLABS_API_KEY', elevenLabsKey); saved++; }
+                        if (tavilyKey) { localStorage.setItem('TAVILY_API_KEY', tavilyKey); saved++; }
+                        if (googleKey) { localStorage.setItem('GOOGLE_API_KEY', googleKey); saved++; }
+                        
+                        showSettingsStatus(`✓ Saved ${saved} key(s). Refresh page to apply.`);
+                        console.log('API keys saved to localStorage');
+                    });
+                }
+                
+                if (clearKeys) {
+                    clearKeys.addEventListener('click', () => {
+                        if (confirm('Clear all saved API keys?')) {
+                            localStorage.removeItem('ELEVENLABS_API_KEY');
+                            localStorage.removeItem('TAVILY_API_KEY');
+                            localStorage.removeItem('GOOGLE_API_KEY');
+                            document.getElementById('elevenlabs-key').value = '';
+                            document.getElementById('tavily-key').value = '';
+                            document.getElementById('google-key').value = '';
+                            showSettingsStatus('✓ All keys cleared');
+                        }
+                    });
+                }
+                
+                if (refreshOllama) {
+                    refreshOllama.addEventListener('click', async () => {
+                        if (window.avaConversation && window.avaConversation.llm) {
+                            refreshOllama.textContent = '⏳ Checking...';
+                            await window.avaConversation.llm.checkAvailability();
+                            updateOllamaStatusInModal();
+                            checkLLMStatus();
+                            refreshOllama.textContent = '🔄 Refresh Connection';
+                        }
+                    });
+                }
+                
+                // Test audio button
+                const testAudioBtn = document.getElementById('test-audio');
+                if (testAudioBtn) {
+                    testAudioBtn.addEventListener('click', () => {
+                        testAudioSystem();
+                    });
+                }
+                
+                function testAudioSystem() {
+                    console.log('=== Testing Audio System ===');
+                    
+                    // Check if speech synthesis is available
+                    if (!('speechSynthesis' in window)) {
+                        alert('Speech synthesis not supported in this browser. Try Chrome or Firefox.');
+                        return;
+                    }
+                    
+                    const synth = window.speechSynthesis;
+                    
+                    // Force get voices
+                    let voices = synth.getVoices();
+                    console.log(`Found ${voices.length} voices`);
+                    
+                    if (voices.length === 0) {
+                        // Sometimes voices aren't loaded yet - try to trigger loading
+                        console.log('No voices yet, triggering load...');
+                        
+                        if (testAudioBtn) {
+                            testAudioBtn.innerHTML = '<span class="voice-icon">⏳</span><span>Loading voices...</span>';
+                        }
+                        
+                        // Wait and retry
+                        setTimeout(() => {
+                            voices = synth.getVoices();
+                            console.log(`After wait: ${voices.length} voices`);
+                            
+                            if (voices.length > 0) {
+                                doTestSpeak(voices);
+                            } else {
+                                alert('No voices available. This may be a browser issue.\n\nTry:\n1. Refresh the page\n2. Use Chrome browser\n3. Check system audio settings');
+                                if (testAudioBtn) {
+                                    testAudioBtn.innerHTML = '<span class="voice-icon">🔊</span><span>Test Audio</span>';
+                                }
+                            }
+                        }, 1000);
+                        return;
+                    }
+                    
+                    doTestSpeak(voices);
+                }
+                
+                function doTestSpeak(voices) {
+                    // Log available voices
+                    console.log('Available voices:');
+                    voices.forEach((v, i) => console.log(`  ${i}: ${v.name} [${v.lang}]`));
+                    
+                    // Pick a voice - prefer English
+                    let voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+                    console.log(`Using voice: ${voice.name}`);
+                    
+                    // Update A.V.A. conversation voice if available
+                    if (window.avaConversation) {
+                        window.avaConversation.avaVoice = voice;
+                        window.avaConversation.voicesLoaded = true;
+                    }
+                    
+                    // Create and speak utterance
+                    const utterance = new SpeechSynthesisUtterance("Hello! This is A.V.A. testing the audio system. Can you hear me clearly?");
+                    utterance.voice = voice;
+                    utterance.rate = 0.95;
+                    utterance.pitch = 1.05;
+                    utterance.volume = 1.0;
+                    
+                    utterance.onstart = () => {
+                        console.log('Speech started');
+                        if (testAudioBtn) {
+                            testAudioBtn.innerHTML = '<span class="voice-icon">🔊</span><span>Speaking...</span>';
+                            testAudioBtn.disabled = true;
+                        }
+                    };
+                    
+                    utterance.onend = () => {
+                        console.log('Speech ended');
+                        if (testAudioBtn) {
+                            testAudioBtn.innerHTML = '<span class="voice-icon">🔊</span><span>Test Audio</span>';
+                            testAudioBtn.disabled = false;
+                        }
+                    };
+                    
+                    utterance.onerror = (e) => {
+                        console.error('Speech error:', e.error);
+                        alert('Speech error: ' + e.error + '\n\nTry refreshing the page.');
+                        if (testAudioBtn) {
+                            testAudioBtn.innerHTML = '<span class="voice-icon">🔊</span><span>Test Audio</span>';
+                            testAudioBtn.disabled = false;
+                        }
+                    };
+                    
+                    // Cancel any ongoing speech and speak
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
+                    
+                    console.log('Speech initiated');
+                }
+                
+                // Text input handlers
+                if (!textInput || !sendTextBtn) {
+                    console.error('Text input elements not found!');
+                } else {
+                    console.log('Text input elements found, attaching handlers...');
+                    
+                    // Enter key handler
+                    textInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendTextMessage();
+                        }
+                    });
+                    
+                    // Send button handler
+                    sendTextBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        sendTextMessage();
+                    });
+                    
+                    // Focus handler for better UX
+                    textInput.addEventListener('focus', () => {
+                        console.log('Text input focused');
+                    });
+                    
+                    function sendTextMessage() {
+                        const message = textInput.value.trim();
+                        if (!message) {
+                            console.log('Empty message, ignoring');
+                            return;
+                        }
+                        
+                        console.log('=== Sending Text Message ===');
+                        console.log('Message:', message);
+                        console.log('A.V.A. Conversation exists:', !!window.avaConversation);
+                        
+                        if (!window.avaConversation) {
+                            console.error('A.V.A. conversation not initialized');
+                            const errorMsg = 'A.V.A. conversation system not ready. Initializing...';
+                            console.log(errorMsg);
+                            
+                            // Try to initialize
+                            if (window.avaSystem) {
+                                window.avaConversation = new AVAConversation(window.avaSystem);
+                                console.log('A.V.A. Conversation initialized on demand');
+                                // Retry
+                                setTimeout(() => sendTextMessage(), 100);
+                                return;
+                            } else {
+                                alert('A.V.A. system not loaded. Please refresh the page.');
+                                return;
+                            }
+                        }
+                        
+                        // Clear input immediately for better UX
+                        textInput.value = '';
+                        
+                        // Call the processInput method (async)
+                        window.avaConversation.processInput(message).catch(error => {
+                            console.error('Error processing input:', error);
+                            console.error('Error stack:', error.stack);
+                            if (window.avaConversation && window.avaConversation.addMessage) {
+                                window.avaConversation.addMessage('We encountered an error: ' + error.message, 'system');
+                            } else {
+                                alert('Error: ' + error.message);
+                            }
+                        });
+                    }
+                    
+                    console.log('Text input handlers attached successfully');
+                }
+                
+                // Conversation actions
+                if (exportBtn) {
+                    exportBtn.addEventListener('click', () => {
+                        if (window.avaConversation) {
+                            window.avaConversation.exportConversation();
+                        } else {
+                            alert('Conversation system not initialized.');
+                        }
+                    });
+                }
+                
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        const container = document.getElementById('conversation-container');
+                        if (container) {
+                            container.innerHTML = `
+                                <div class="conversation-message system">
+                                    <div class="message-header">
+                                        <span class="message-sender">System</span>
+                                        <span class="message-timestamp">${new Date().toLocaleTimeString()}</span>
+                                    </div>
+                                    <div class="message-content">Conversation cleared. A.V.A. is ready for new interactions.</div>
+                                </div>
+                            `;
+                            if (window.avaConversation) {
+                                window.avaConversation.conversationHistory = [];
+                            }
+                        }
+                    });
+                }
+                
+                // Audio status updates
+                setInterval(updateAudioStatus, 1000);
+                
+                function updateAudioStatus() {
+                    const voiceRecStatus = document.getElementById('voice-rec-status');
+                    const speechSynthStatus = document.getElementById('speech-synth-status');
+                    const audioContextStatus = document.getElementById('audio-context-status');
+                    const volumeLevel = document.getElementById('volume-level');
+                    
+                    if (window.avaConversation) {
+                        // Voice recognition status
+                        if (window.avaConversation.recognition) {
+                            voiceRecStatus.textContent = window.avaConversation.isListening ? 'Active' : 'Ready';
+                            voiceRecStatus.style.color = window.avaConversation.isListening ? 'var(--electric-cyan)' : 'var(--bio-teal)';
+                        } else {
+                            voiceRecStatus.textContent = 'Not Supported';
+                            voiceRecStatus.style.color = 'var(--crimson-error)';
+                        }
+                        
+                        // Speech synthesis status
+                        if (window.avaConversation.synthesis) {
+                            speechSynthStatus.textContent = window.avaConversation.synthesis.speaking ? 'Speaking' : 'Ready';
+                            speechSynthStatus.style.color = window.avaConversation.synthesis.speaking ? 'var(--violet-flux)' : 'var(--bio-teal)';
+                            
+                            // Update volume level
+                            const volume = window.avaConversation.synthesis.speaking ? Math.random() * 100 : 0;
+                            volumeLevel.style.width = `${volume}%`;
+                        } else {
+                            speechSynthStatus.textContent = 'Not Supported';
+                            speechSynthStatus.style.color = 'var(--crimson-error)';
+                        }
+                        
+                        // Audio context status
+                        if (window.avaConversation.audioContext) {
+                            audioContextStatus.textContent = window.avaConversation.audioContext.state;
+                            audioContextStatus.style.color = window.avaConversation.audioContext.state === 'running' ? 'var(--electric-cyan)' : 'var(--amber-alert)';
+                        } else {
+                            audioContextStatus.textContent = 'Inactive';
+                            audioContextStatus.style.color = 'var(--amber-alert)';
+                        }
+                    }
+                }
+            }
+            
+            // Update consciousness value display
+            const consciousnessSlider = document.getElementById('consciousness-slider');
+            const consciousnessValue = document.getElementById('consciousness-value');
+            
+            consciousnessSlider.addEventListener('input', (e) => {
+                consciousnessValue.textContent = `${Math.round(parseFloat(e.target.value) * 100)}%`;
+            });
+            
+            // Update empathy score display
+            const empathySlider = document.getElementById('empathy-slider');
+            const empathyScore = document.getElementById('empathy-score');
+            
+            empathySlider.addEventListener('input', (e) => {
+                empathyScore.textContent = `${Math.round(parseFloat(e.target.value) * 100)}%`;
+            });
+            
+            // Initialize hero animations
+            anime({
+                targets: '.hero-title',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1000,
+                easing: 'easeOutExpo'
+            });
+            
+            anime({
+                targets: '.hero-subtitle, .hero-description',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 800,
+                delay: anime.stagger(200),
+                easing: 'easeOutExpo'
+            });
+            
+            anime({
+                targets: '#ava-avatar',
+                opacity: [0, 1],
+                scale: [0.8, 1],
+                duration: 1200,
+                delay: 500,
+                easing: 'easeOutElastic(1, .8)'
+            });
+            
+            // Animate consciousness panels
+            anime({
+                targets: '.consciousness-panel',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 600,
+                delay: anime.stagger(100),
+                easing: 'easeOutExpo'
+            });
+            
+            // Animate conversation interface
+            anime({
+                targets: '.conversation-section',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 800,
+                delay: 1500,
+                easing: 'easeOutExpo'
+            });
+        });
+    </script>
+</body>
+</html>
