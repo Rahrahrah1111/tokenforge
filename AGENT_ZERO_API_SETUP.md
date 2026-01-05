@@ -168,7 +168,7 @@ For the easiest free setup:
 1. **Get OpenRouter key** (free account)
 2. **In Agent Zero Settings:**
    - Add OpenRouter API key
-   - **IMPORTANT**: Select a **free model** like: `meta-llama/llama-3.2-3b-instruct:free`
+k   - **IMPORTANT**: Select a **free model** like: `meta-llama/llama-3.2-3b-instruct:free`
    - This prevents "402 Payment Required" errors
 3. **Save and test**
 
