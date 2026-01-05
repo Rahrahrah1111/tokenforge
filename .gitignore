@@ -12,10 +12,7 @@ venv/
 */venv/
 tokenforge_chat_venv/
 
-# TokenForge module (tracked in its own repo; keep as external dependency)
-tokenforge/
-
-# TokenForge build artifacts (if you decide to vendor it later)
+# TokenForge build artifacts
 tokenforge/dist/
 tokenforge/tokenforge.egg-info/
 
