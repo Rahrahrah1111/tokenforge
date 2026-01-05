@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Avatar - Animated Voice Avatar</title>
+    
+    <!-- Three.js for 3D avatar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --neural-black: #0a0a0a;
+            --electric-cyan: #00ffff;
+            --bio-teal: #20b2aa;
+            --synapse-white: #f8f8ff;
+            --amber-alert: #ffbf00;
+            --violet-flux: #8a2be2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: var(--synapse-white);
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .header {
+            padding: 1.5rem 2rem;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--electric-cyan);
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            padding: 2rem;
+            overflow: hidden;
+        }
+        
+        .avatar-section {
+            position: relative;
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid var(--electric-cyan);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+        }
+        
+        #avatar-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background: rgba(0, 255, 255, 0.05);
+            border: 2px solid var(--bio-teal);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+        
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--electric-cyan);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .text-input-box {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--bio-teal);
+            border-radius: 10px;
+            color: var(--synapse-white);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .text-input-box:focus {
+            outline: none;
+            border-color: var(--electric-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .text-input-box::placeholder {
+            color: rgba(248, 248, 255, 0.5);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal));
+            border: none;
+            border-radius: 10px;
+            color: var(--neural-black);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid var(--electric-cyan);
+            color: var(--electric-cyan);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        .slider-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--synapse-white);
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 255, 255, 0.2);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--electric-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--electric-cyan);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--electric-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px var(--electric-cyan);
+        }
+        
+        .status-indicator {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--bio-teal);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--bio-teal);
+        }
+        
+        .status-indicator.active {
+            border-color: var(--electric-cyan);
+            color: var(--electric-cyan);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            }
+        }
+        
+        .voice-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--bio-teal);
+            border-radius: 10px;
+            color: var(--synapse-white);
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .voice-select:focus {
+            outline: none;
+            border-color: var(--electric-cyan);
+        }
+        
+        .expression-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .expression-btn {
+            padding: 0.75rem;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--bio-teal);
+            border-radius: 8px;
+            color: var(--synapse-white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .expression-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: var(--electric-cyan);
+            transform: scale(1.05);
+        }
+        
+        .expression-btn.active {
+            background: linear-gradient(45deg, var(--electric-cyan), var(--bio-teal));
+            color: var(--neural-black);
+            border-color: var(--electric-cyan);
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .avatar-section {
+                min-height: 400px;
+            }
+            
+            .controls-section {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>🎭 TTS Avatar - Animated Voice Avatar</h1>
+                <a href="index.html" style="color: var(--electric-cyan); text-decoration: none; font-weight: 600; padding: 0.5rem 1rem; border: 1px solid var(--electric-cyan); border-radius: 5px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(0,255,255,0.1)'" onmouseout="this.style.background='transparent'">← Back to A.V.A.</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="avatar-section">
+                <canvas id="avatar-canvas"></canvas>
+            </div>
+            
+            <div class="controls-section">
+                <div class="control-group">
+                    <label class="control-label">📝 Enter Text to Speak</label>
+                    <textarea 
+                        id="text-input" 
+                        class="text-input-box" 
+                        placeholder="Type or paste your text here... The avatar will speak it with animated mouth movements and facial expressions!"
+                    ></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button id="speak-btn" class="btn">
+                        <span>🎤</span>
+                        <span>Speak</span>
+                    </button>
+                    <button id="stop-btn" class="btn btn-secondary" disabled>
+                        <span>⏹️</span>
+                        <span>Stop</span>
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">🔊 Voice Selection</label>
+                    <select id="voice-select" class="voice-select">
+                        <option value="">Loading voices...</option>
+                    </select>
+                </div>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Speech Rate</span>
+                        <span id="rate-value">1.0</span>
+                    </div>
+                    <input type="range" id="rate-slider" class="slider" min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Pitch</span>
+                        <span id="pitch-value">1.0</span>
+                    </div>
+                    <input type="range" id="pitch-slider" class="slider" min="0.5" max="2.0" step="0.1" value="1.0">
+                </div>
+                
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Volume</span>
+                        <span id="volume-value">1.0</span>
+                    </div>
+                    <input type="range" id="volume-slider" class="slider" min="0" max="1" step="0.1" value="1.0">
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">😊 Facial Expressions</label>
+                    <div class="expression-buttons">
+                        <button class="expression-btn" data-expression="happy">😊 Happy</button>
+                        <button class="expression-btn" data-expression="sad">😢 Sad</button>
+                        <button class="expression-btn" data-expression="angry">😠 Angry</button>
+                        <button class="expression-btn" data-expression="surprised">😲 Surprised</button>
+                        <button class="expression-btn" data-expression="neutral">😐 Neutral</button>
+                        <button class="expression-btn" data-expression="excited">🤩 Excited</button>
+                    </div>
+                </div>
+                
+                <div class="status-indicator" id="status-indicator">
+                    ⭕ Ready
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // TTS Avatar System
+        class TTSAvatar {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.avatar = null;
+                this.audioContext = null;
+                this.analyser = null;
+                this.synthesis = window.speechSynthesis;
+                this.currentUtterance = null;
+                this.isSpeaking = false;
+                this.currentExpression = 'neutral';
+                this.mouthOpenness = 0;
+                this.animationFrame = null;
+                
+                // Avatar parameters
+                this.headRotation = { x: 0, y: 0, z: 0 };
+                this.eyeBlink = 0;
+                this.blinkTimer = 0;
+                this.expressionWeights = {
+                    happy: { mouth: 0.3, eyes: 0.2, cheeks: 0.4 },
+                    sad: { mouth: -0.2, eyes: -0.3, eyebrows: -0.4 },
+                    angry: { mouth: -0.1, eyes: -0.2, eyebrows: 0.5 },
+                    surprised: { mouth: 0.5, eyes: 0.6, eyebrows: 0.5 },
+                    neutral: { mouth: 0, eyes: 0, eyebrows: 0 },
+                    excited: { mouth: 0.4, eyes: 0.3, cheeks: 0.5 }
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupThreeJS();
+                this.setupAudio();
+                this.loadVoices();
+                this.setupEventListeners();
+                this.animate();
+            }
+            
+            setupThreeJS() {
+                const canvas = document.getElementById('avatar-canvas');
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                
+                // Scene
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x0a0a0a);
+                
+                // Camera
+                this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+                this.camera.position.set(0, 0, 5);
+                
+                // Renderer
+                this.renderer = new THREE.WebGLRenderer({ 
+                    canvas: canvas, 
+                    antialias: true,
+                    alpha: true 
+                });
+                this.renderer.setSize(width, height);
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+                
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+                this.scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0x00ffff, 0.8);
+                directionalLight.position.set(5, 5, 5);
+                this.scene.add(directionalLight);
+                
+                const pointLight = new THREE.PointLight(0x20b2aa, 0.5);
+                pointLight.position.set(-5, 3, 5);
+                this.scene.add(pointLight);
+                
+                // Create avatar
+                this.createAvatar();
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    const width = canvas.clientWidth;
+                    const height = canvas.clientHeight;
+                    this.camera.aspect = width / height;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(width, height);
+                });
+            }
+            
+            createAvatar() {
+                const avatarGroup = new THREE.Group();
+                
+                // Head (sphere)
+                const headGeometry = new THREE.SphereGeometry(1, 32, 32);
+                const headMaterial = new THREE.MeshPhongMaterial({
+                    color: 0xffdbac,
+                    shininess: 30
+                });
+                const head = new THREE.Mesh(headGeometry, headMaterial);
+                avatarGroup.add(head);
+                
+                // Eyes
+                const eyeGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+                const eyeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+                
+                const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                leftEye.position.set(-0.3, 0.2, 0.85);
+                avatarGroup.add(leftEye);
+                
+                const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+                rightEye.position.set(0.3, 0.2, 0.85);
+                avatarGroup.add(rightEye);
+                
+                // Pupils
+                const pupilGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+                const pupilMaterial = new THREE.MeshPhongMaterial({ color: 0x000000 });
+                
+                const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+                leftPupil.position.set(-0.3, 0.2, 0.95);
+                avatarGroup.add(leftPupil);
+                
+                const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+                rightPupil.position.set(0.3, 0.2, 0.95);
+                avatarGroup.add(rightPupil);
+                
+                // Store references for animation
+                this.avatar = {
+                    group: avatarGroup,
+                    head: head,
+                    leftEye: leftEye,
+                    rightEye: rightEye,
+                    leftPupil: leftPupil,
+                    rightPupil: rightPupil,
+                    mouth: null // Will be created dynamically
+                };
+                
+                // Create mouth (will be animated)
+                this.updateMouth(0);
+                
+                this.scene.add(avatarGroup);
+            }
+            
+            updateMouth(openness, shape = 'ellipse') {
+                // Remove old mouth if exists
+                if (this.avatar.mouth) {
+                    this.avatar.group.remove(this.avatar.mouth);
+                }
+                
+                // Create mouth based on openness and shape
+                const baseWidth = 0.4;
+                const baseHeight = Math.max(0.05, openness * 0.35);
+                
+                let mouthShape;
+                
+                if (shape === 'wide') {
+                    // Wide mouth for sounds like "ah", "oh"
+                    const width = baseWidth * 1.3;
+                    const height = baseHeight * 0.8;
+                    mouthShape = new THREE.Shape();
+                    mouthShape.absellipse(0, 0, width / 2, height / 2, 0, Math.PI * 2, false);
+                } else if (shape === 'narrow') {
+                    // Narrow mouth for sounds like "ee", "ih"
+                    const width = baseWidth * 0.6;
+                    const height = baseHeight * 0.5;
+                    mouthShape = new THREE.Shape();
+                    mouthShape.absellipse(0, 0, width / 2, height / 2, 0, Math.PI * 2, false);
+                } else if (shape === 'round') {
+                    // Round mouth for sounds like "oo", "oh"
+                    const size = Math.max(baseWidth, baseHeight) * 0.9;
+                    mouthShape = new THREE.Shape();
+                    mouthShape.absellipse(0, 0, size / 2, size / 2, 0, Math.PI * 2, false);
+                } else {
+                    // Default ellipse
+                    mouthShape = new THREE.Shape();
+                    mouthShape.absellipse(0, 0, baseWidth / 2, baseHeight / 2, 0, Math.PI * 2, false);
+                }
+                
+                const mouthGeometry3D = new THREE.ShapeGeometry(mouthShape);
+                const mouthMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0x8b0000,
+                    shininess: 50
+                });
+                const mouth = new THREE.Mesh(mouthGeometry3D, mouthMaterial);
+                mouth.position.set(0, -0.3, 0.85);
+                mouth.rotation.x = Math.PI / 2;
+                
+                this.avatar.mouth = mouth;
+                this.avatar.group.add(mouth);
+            }
+            
+            // Estimate mouth shape from text (simple phoneme-based approach)
+            estimateMouthShape(text, position) {
+                if (!text || position >= text.length) return 'ellipse';
+                
+                const char = text[Math.floor(position)].toLowerCase();
+                const vowels = 'aeiou';
+                const wideVowels = 'aoh';
+                const narrowVowels = 'ei';
+                const roundVowels = 'ou';
+                
+                if (vowels.includes(char)) {
+                    if (wideVowels.includes(char)) return 'wide';
+                    if (roundVowels.includes(char)) return 'round';
+                    if (narrowVowels.includes(char)) return 'narrow';
+                }
+                
+                // Consonants that affect mouth shape
+                if ('fvpbm'.includes(char)) return 'narrow';
+                if ('wq'.includes(char)) return 'round';
+                
+                return 'ellipse';
+            }
+            
+            setupAudio() {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    this.analyser.smoothingTimeConstant = 0.8;
+                } catch (e) {
+                    console.warn('Audio context not available:', e);
+                }
+            }
+            
+            loadVoices() {
+                const voiceSelect = document.getElementById('voice-select');
+                
+                const loadVoicesList = () => {
+                    const voices = this.synthesis.getVoices();
+                    voiceSelect.innerHTML = '';
+                    
+                    if (voices.length === 0) {
+                        voiceSelect.innerHTML = '<option value="">No voices available</option>';
+                        return;
+                    }
+                    
+                    // Filter English voices
+                    const englishVoices = voices.filter(v => v.lang.startsWith('en'));
+                    const allVoices = englishVoices.length > 0 ? englishVoices : voices;
+                    
+                    allVoices.forEach((voice, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        option.textContent = `${voice.name} (${voice.lang})`;
+                        voiceSelect.appendChild(option);
+                    });
+                    
+                    // Select first voice by default
+                    if (allVoices.length > 0) {
+                        voiceSelect.value = '0';
+                    }
+                };
+                
+                // Load voices immediately
+                loadVoicesList();
+                
+                // Also load when voices change
+                if ('onvoiceschanged' in this.synthesis) {
+                    this.synthesis.onvoiceschanged = loadVoicesList;
+                }
+            }
+            
+            setupEventListeners() {
+                const speakBtn = document.getElementById('speak-btn');
+                const stopBtn = document.getElementById('stop-btn');
+                const textInput = document.getElementById('text-input');
+                const rateSlider = document.getElementById('rate-slider');
+                const pitchSlider = document.getElementById('pitch-slider');
+                const volumeSlider = document.getElementById('volume-slider');
+                const expressionBtns = document.querySelectorAll('.expression-btn');
+                
+                // Rate slider
+                rateSlider.addEventListener('input', (e) => {
+                    document.getElementById('rate-value').textContent = parseFloat(e.target.value).toFixed(1);
+                });
+                
+                // Pitch slider
+                pitchSlider.addEventListener('input', (e) => {
+                    document.getElementById('pitch-value').textContent = parseFloat(e.target.value).toFixed(1);
+                });
+                
+                // Volume slider
+                volumeSlider.addEventListener('input', (e) => {
+                    document.getElementById('volume-value').textContent = parseFloat(e.target.value).toFixed(1);
+                });
+                
+                // Expression buttons
+                expressionBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        expressionBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.setExpression(btn.dataset.expression);
+                    });
+                });
+                
+                // Set default expression
+                document.querySelector('.expression-btn[data-expression="neutral"]').classList.add('active');
+                
+                // Speak button
+                speakBtn.addEventListener('click', () => {
+                    const text = textInput.value.trim();
+                    if (text) {
+                        this.speak(text);
+                    }
+                });
+                
+                // Stop button
+                stopBtn.addEventListener('click', () => {
+                    this.stopSpeaking();
+                });
+                
+                // Enter key to speak
+                textInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                        e.preventDefault();
+                        const text = textInput.value.trim();
+                        if (text) {
+                            this.speak(text);
+                        }
+                    }
+                });
+            }
+            
+            speak(text) {
+                if (this.isSpeaking) {
+                    this.stopSpeaking();
+                }
+                
+                const voiceSelect = document.getElementById('voice-select');
+                const voices = this.synthesis.getVoices();
+                const selectedVoiceIndex = parseInt(voiceSelect.value);
+                const selectedVoice = voices[selectedVoiceIndex] || null;
+                
+                const rate = parseFloat(document.getElementById('rate-slider').value);
+                const pitch = parseFloat(document.getElementById('pitch-slider').value);
+                const volume = parseFloat(document.getElementById('volume-slider').value);
+                
+                // Create utterance
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.voice = selectedVoice;
+                utterance.rate = rate;
+                utterance.pitch = pitch;
+                utterance.volume = volume;
+                
+                // Event handlers
+                utterance.onstart = () => {
+                    this.isSpeaking = true;
+                    document.getElementById('speak-btn').disabled = true;
+                    document.getElementById('stop-btn').disabled = false;
+                    document.getElementById('status-indicator').textContent = '🔊 Speaking...';
+                    document.getElementById('status-indicator').classList.add('active');
+                    this.startLipSync();
+                };
+                
+                utterance.onend = () => {
+                    this.isSpeaking = false;
+                    document.getElementById('speak-btn').disabled = false;
+                    document.getElementById('stop-btn').disabled = true;
+                    document.getElementById('status-indicator').textContent = '⭕ Ready';
+                    document.getElementById('status-indicator').classList.remove('active');
+                    this.stopLipSync();
+                    this.mouthOpenness = 0;
+                    this.updateMouth(0);
+                };
+                
+                utterance.onerror = (e) => {
+                    console.error('Speech error:', e);
+                    this.isSpeaking = false;
+                    document.getElementById('speak-btn').disabled = false;
+                    document.getElementById('stop-btn').disabled = true;
+                    document.getElementById('status-indicator').textContent = '❌ Error';
+                    document.getElementById('status-indicator').classList.remove('active');
+                    this.stopLipSync();
+                };
+                
+                this.currentUtterance = utterance;
+                this.synthesis.speak(utterance);
+            }
+            
+            stopSpeaking() {
+                if (this.synthesis.speaking) {
+                    this.synthesis.cancel();
+                }
+                this.isSpeaking = false;
+                document.getElementById('speak-btn').disabled = false;
+                document.getElementById('stop-btn').disabled = true;
+                document.getElementById('status-indicator').textContent = '⭕ Ready';
+                document.getElementById('status-indicator').classList.remove('active');
+                this.stopLipSync();
+                this.mouthOpenness = 0;
+                this.updateMouth(0);
+            }
+            
+            startLipSync() {
+                // Get the text being spoken
+                const textInput = document.getElementById('text-input');
+                const text = textInput.value.trim();
+                
+                if (!text) return;
+                
+                // Calculate speech rate for timing
+                const rate = parseFloat(document.getElementById('rate-slider').value);
+                const wordsPerMinute = rate * 150; // Base WPM
+                const charsPerSecond = (wordsPerMinute / 60) * 5; // Average 5 chars per word
+                
+                let startTime = Date.now();
+                let charIndex = 0;
+                
+                // Analyze audio and sync mouth movements
+                this.lipSyncInterval = setInterval(() => {
+                    if (!this.isSpeaking) return;
+                    
+                    // Calculate current position in text based on elapsed time
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const estimatedCharIndex = Math.floor(elapsed * charsPerSecond);
+                    
+                    // Update mouth based on current character
+                    if (estimatedCharIndex < text.length) {
+                        const currentChar = text[estimatedCharIndex];
+                        const isVowel = 'aeiouAEIOU'.includes(currentChar);
+                        const isConsonant = /[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/.test(currentChar);
+                        
+                        // Vowels = more open, consonants = less open
+                        if (isVowel) {
+                            this.mouthOpenness = 0.5 + Math.random() * 0.3;
+                        } else if (isConsonant) {
+                            this.mouthOpenness = 0.1 + Math.random() * 0.2;
+                        } else {
+                            // Spaces and punctuation
+                            this.mouthOpenness = 0.05 + Math.random() * 0.1;
+                        }
+                        
+                        // Get mouth shape based on phoneme
+                        const mouthShape = this.estimateMouthShape(text, estimatedCharIndex);
+                        this.updateMouth(this.mouthOpenness, mouthShape);
+                        
+                        // Add natural head movement synchronized with speech
+                        const time = Date.now() / 200;
+                        this.headRotation.y = Math.sin(time * 0.3) * 0.08;
+                        this.headRotation.x = Math.cos(time * 0.2) * 0.04;
+                        
+                        // Subtle eye movements
+                        const eyeTime = Date.now() / 3000;
+                        this.avatar.leftPupil.position.x = -0.3 + Math.sin(eyeTime) * 0.02;
+                        this.avatar.leftPupil.position.y = 0.2 + Math.cos(eyeTime * 0.7) * 0.02;
+                        this.avatar.rightPupil.position.x = 0.3 + Math.sin(eyeTime) * 0.02;
+                        this.avatar.rightPupil.position.y = 0.2 + Math.cos(eyeTime * 0.7) * 0.02;
+                    } else {
+                        // Near end of speech, close mouth gradually
+                        this.mouthOpenness = Math.max(0, this.mouthOpenness - 0.05);
+                        this.updateMouth(this.mouthOpenness);
+                    }
+                }, 33); // ~30 FPS for smooth animation
+            }
+            
+            stopLipSync() {
+                if (this.lipSyncInterval) {
+                    clearInterval(this.lipSyncInterval);
+                    this.lipSyncInterval = null;
+                }
+                this.mouthOpenness = 0;
+                this.updateMouth(0);
+            }
+            
+            setExpression(expression) {
+                this.currentExpression = expression;
+                // Expression changes will be applied in the animate loop
+            }
+            
+            animate() {
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+                
+                if (!this.avatar) return;
+                
+                // Blinking
+                this.blinkTimer += 0.02;
+                if (this.blinkTimer > Math.PI * 2) {
+                    this.blinkTimer = 0;
+                }
+                this.eyeBlink = Math.abs(Math.sin(this.blinkTimer * 2)) < 0.1 ? 0.8 : 1.0;
+                
+                // Apply expression
+                const weights = this.expressionWeights[this.currentExpression] || this.expressionWeights.neutral;
+                
+                // Rotate head slightly based on expression and speaking
+                if (this.isSpeaking) {
+                    this.avatar.group.rotation.y = this.headRotation.y;
+                    this.avatar.group.rotation.x = this.headRotation.x;
+                } else {
+                    // Gentle idle animation
+                    const time = Date.now() / 2000;
+                    this.avatar.group.rotation.y = Math.sin(time) * 0.05;
+                    this.avatar.group.rotation.x = Math.cos(time * 0.7) * 0.03;
+                }
+                
+                // Apply eye blink
+                this.avatar.leftEye.scale.y = this.eyeBlink;
+                this.avatar.rightEye.scale.y = this.eyeBlink;
+                
+                // Expression-based mouth adjustments (when not speaking)
+                if (!this.isSpeaking && this.currentExpression !== 'neutral') {
+                    const baseOpenness = Math.abs(weights.mouth) * 0.3;
+                    let mouthShape = 'ellipse';
+                    
+                    if (this.currentExpression === 'happy' || this.currentExpression === 'excited') {
+                        mouthShape = 'wide';
+                    } else if (this.currentExpression === 'surprised') {
+                        mouthShape = 'round';
+                    } else if (this.currentExpression === 'sad') {
+                        mouthShape = 'narrow';
+                    }
+                    
+                    this.updateMouth(Math.max(0.05, baseOpenness), mouthShape);
+                }
+                
+                // Apply expression-based eye adjustments
+                if (weights.eyes !== 0) {
+                    const eyeScale = 1 + weights.eyes * 0.2;
+                    this.avatar.leftEye.scale.x = eyeScale;
+                    this.avatar.rightEye.scale.x = eyeScale;
+                }
+                
+                // Render
+                this.renderer.render(this.scene, this.camera);
+            }
+            
+            destroy() {
+                if (this.animationFrame) {
+                    cancelAnimationFrame(this.animationFrame);
+                }
+                if (this.lipSyncInterval) {
+                    clearInterval(this.lipSyncInterval);
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+            }
+        }
+        
+        // Initialize when page loads
+        let avatarSystem;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            avatarSystem = new TTSAvatar();
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            if (avatarSystem) {
+                avatarSystem.destroy();
+            }
+        });
+    </script>
+</body>
+</html>
