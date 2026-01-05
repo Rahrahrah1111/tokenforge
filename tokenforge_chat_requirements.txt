@@ -17,4 +17,6 @@ numpy>=1.21.0
 # Core dependencies
 requests>=2.28.0
 
+# Optional: Strong encryption support
+cryptography>=42.0.0
 
